@@ -554,6 +554,9 @@ build_version() {
         echo "  --no-sync: skipping uv sync (using active venv as-is)"
     else
         echo "Syncing dependencies via uv sync into $VENV_DIR..."
+        # Refresh the lock first. pyproject markers differ by Python version
+        # (PyAV 17 and pygame-ce on 3.14), and a stale uv.lock makes sync fail.
+        uv lock --python "$PYVER" >&2
         # --no-install-project: install dependencies only. Installing the
         # project editable would run setup.py build_ext, whose output dir
         # resolves to src/pyorbbecsdk/ and pollutes the source tree.
@@ -576,40 +579,45 @@ build_version() {
         exit 1
     fi
 
-    # auditwheel (skip py38 if needed)
+    # auditwheel needs patchelf. Without it, keep the local linux wheel and
+    # do not retag it as manylinux. Python 3.8 still skips repair when patchelf exists.
     if [ -d "$ROOT_DIR/dist" ]; then
-        if [[ "$PYVER" != "3.8" ]]; then
-            echo "Repairing wheel with auditwheel..."
-            # --no-project: run auditwheel in an isolated env without linking the
-            # current project (which would editable-install it and pollute src/).
-            uv run --no-project --python "$PYVER" --with auditwheel auditwheel repair "."/dist/*.whl \
-                --exclude libEGL* \
-                --exclude libGLES* \
-                --exclude libGL* \
-                --exclude libOrbbecSDK.so* \
-                --exclude libdepthengine.so* \
-                --exclude libFilterProcessor.so \
-                --exclude libob_*.so \
-                --exclude libfirmwareupdater.so \
-                --exclude libob_frame_processor.so \
-                --exclude libnvinfer.so.10 \
-                --exclude libnvinfer_plugin.so.10 \
-                --exclude libnvonnxparser.so.10 \
-                --exclude libcudart.so.* \
-                --exclude libcudart_* \
-                -w "$ROOT_DIR/dist/"
-        fi
+        if command -v patchelf >/dev/null 2>&1; then
+            if [[ "$PYVER" != "3.8" ]]; then
+                echo "Repairing wheel with auditwheel..."
+                # --no-project: run auditwheel in an isolated env without linking the
+                # current project (which would editable-install it and pollute src/).
+                uv run --no-project --python "$PYVER" --with auditwheel auditwheel repair "."/dist/*.whl \
+                    --exclude libEGL* \
+                    --exclude libGLES* \
+                    --exclude libGL* \
+                    --exclude libOrbbecSDK.so* \
+                    --exclude libdepthengine.so* \
+                    --exclude libFilterProcessor.so \
+                    --exclude libob_*.so \
+                    --exclude libfirmwareupdater.so \
+                    --exclude libob_frame_processor.so \
+                    --exclude libnvinfer.so.10 \
+                    --exclude libnvinfer_plugin.so.10 \
+                    --exclude libnvonnxparser.so.10 \
+                    --exclude libcudart.so.* \
+                    --exclude libcudart_* \
+                    -w "$ROOT_DIR/dist/"
+            fi
 
-        # Force-retag the manylinux platform tag after build.
-        # auditwheel may produce tags like manylinux_2_31_x86_64 or manylinux_2_28_x86_64
-        # depending on the system's glibc version. Force-rewrite it to the specified
-        # manylinux version (default 2.27) to match the target compatibility.
-        local plat_tag
-        plat_tag="manylinux_${MANYLINUX_VERSION}_${ARCH}"
-        plat_tag="${plat_tag//./_}"  # Replace dots with underscores for manylinux tag format
-        echo "Force-retagging wheel platform tag to $plat_tag..."
-        ( cd "$ROOT_DIR/dist" && \
-          uv run --no-project --with wheel wheel tags --platform-tag "$plat_tag" --remove *.whl )
+            # Force-retag the manylinux platform tag after build.
+            # auditwheel may produce tags like manylinux_2_31_x86_64 or manylinux_2_28_x86_64
+            # depending on the system's glibc version. Force-rewrite it to the specified
+            # manylinux version (default 2.27) to match the target compatibility.
+            local plat_tag
+            plat_tag="manylinux_${MANYLINUX_VERSION}_${ARCH}"
+            plat_tag="${plat_tag//./_}"  # Replace dots with underscores for manylinux tag format
+            echo "Force-retagging wheel platform tag to $plat_tag..."
+            ( cd "$ROOT_DIR/dist" && \
+              uv run --no-project --with wheel wheel tags --platform-tag "$plat_tag" --remove *.whl )
+        else
+            echo "patchelf not found; keeping the local linux wheel (no auditwheel repair, no manylinux retag)"
+        fi
 
         cp "$ROOT_DIR"/dist/*.whl "$WHEEL_DIR/"
         rm -rf "$ROOT_DIR/dist"

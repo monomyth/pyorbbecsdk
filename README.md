@@ -111,7 +111,7 @@ pip install --upgrade pyorbbecsdk2
 > 🔧 **Building from Source?**
 > See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/4_Package/build_with_uv.html) for detailed instructions.
 
-> **Note for CPython 3.14:** PyPI wheels for pyorbbecsdk2 2.1.2 stop at CPython 3.13. This branch builds 3.14 by moving the pybind11 pin to 3.1.0 (which requires Python 3.9+), PyAV to 17.0.0, and the window library to pygame-ce. Build with `scripts/build_whl/build-whl-uv.sh 3.14`.
+> **Note for CPython 3.14:** PyPI wheels for pyorbbecsdk2 2.1.2 stop at CPython 3.13. This branch builds 3.14 by moving the pybind11 pin to 3.1.0 (which requires Python 3.9+), PyAV to 17.0.0, and the window library to pygame-ce. Build with `scripts/build_whl/build-whl-uv.sh 3.14`. Without patchelf, that script keeps the linux_x86_64 wheel instead of running auditwheel.
 
 **2. Setup the environment** (one-time OS-level configuration for metadata and udev rules):
 
