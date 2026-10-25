@@ -1,33 +1,34 @@
 # Synced from pyproject.toml dependencies
 # Runtime dependencies for pyorbbecsdk2
 
-# Video decoding (av version depends on Python version: 12.3.0 for <3.13, 13.0.0 for >=3.13)
-av>=12.3.0
+# Video decoding (12.3.0 for <3.13, 13.0.0 for 3.13, 17.0.0 for >=3.14)
+av==12.3.0; python_version < "3.13"
+av==13.0.0; python_version >= "3.13" and python_version < "3.14"
+av==17.0.0; python_version >= "3.14"
 
-# NumPy (version depends on Python version: <2.0.0 for <3.12, >=2.1.0 for >=3.12)
-numpy>=1.24.0
+# NumPy (<2.0.0 for <3.12, >=2.1.0 for >=3.12)
+numpy<2.0.0; python_version < "3.12"
+numpy>=2.1.0; python_version >= "3.12"
 
 # Computer vision
 opencv-python
 
-# Visualization
-pygame
+# Visualization. pygame has no cp314 wheel; pygame-ce provides the pygame module.
+pygame; python_version < "3.14"
+pygame-ce>=2.5.5; python_version >= "3.14"
 
-# Point cloud processing (only for Python 3.8-3.11)
-open3d==0.18.0; python_version >= "3.8" and python_version < "3.12"
+# Point cloud processing (only for Python 3.9-3.11)
+open3d==0.18.0; python_version >= "3.9" and python_version < "3.12"
 
 # Keyboard input
 pynput
 
-# macOS specific dependencies (only for Python <3.9)
-pyobjc-core==10.3.2; sys_platform == "darwin" and python_version < "3.9"
-pyobjc-framework-Quartz==10.3.2; sys_platform == "darwin" and python_version < "3.9"
-
-# Build dependencies (from build-system requires)
+# Build dependencies (from build-system requires).
+# pybind11 3.1 is required for CPython 3.14 and drops Python 3.8.
 setuptools>=61.0
 wheel
-pybind11==2.12.0
-pybind11-global==2.12.0
+pybind11==3.1.0
+pybind11-global==3.1.0
 
 # Development dependencies (optional)
 # auditwheel

@@ -3,32 +3,32 @@ name = "pyorbbecsdk2"
 version = "2.1.2"
 description = "pyorbbecsdk is a python wrapper for the OrbbecSDK"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 authors = [
     { name = "zhonghong", email = "zhonghong@orbbec.com" }
 ]
 dependencies = [
     "av==12.3.0; python_version < '3.13'",
-    "av==13.0.0; python_version >= '3.13'",
-    "numpy<2.0.0; python_version >= '3.8' and python_version < '3.12'",
+    "av==13.0.0; python_version >= '3.13' and python_version < '3.14'",
+    # PyAV 13 has no CPython 3.14 wheel. 17.0.0 is the first release that does.
+    "av==17.0.0; python_version >= '3.14'",
+    "numpy<2.0.0; python_version >= '3.9' and python_version < '3.12'",
     "numpy>=2.1.0; python_version >= '3.12'",
     "opencv-python",
-    "pygame",
-    "open3d==0.18.0; python_version >= '3.8' and python_version < '3.12'",
-    # pynput on macOS requires pyobjc; pyobjc 11+ requires Python 3.9+
+    # pygame 2.6.1 has no cp314 wheel. pygame-ce 2.5.5+ publishes one and still imports as pygame.
+    "pygame; python_version < '3.14'",
+    "pygame-ce>=2.5.5; python_version >= '3.14'",
+    "open3d==0.18.0; python_version >= '3.9' and python_version < '3.12'",
     "pynput; sys_platform != 'darwin'",
-    "pynput; sys_platform == 'darwin' and python_version >= '3.9'",
-    "pyobjc-core==10.3.2; sys_platform == 'darwin' and python_version < '3.9'",
-    "pyobjc-framework-Quartz==10.3.2; sys_platform == 'darwin' and python_version < '3.9'",
-    "pynput; sys_platform == 'darwin' and python_version < '3.9'",
+    "pynput; sys_platform == 'darwin'",
 ]
 
 [build-system]
 requires = [
     "setuptools>=61.0",
     "wheel",
-    "pybind11==2.12.0",
-    "pybind11-global==2.12.0"
+    "pybind11==3.1.0",
+    "pybind11-global==3.1.0"
 ]
 build-backend = "setuptools.build_meta"
 
@@ -40,7 +40,7 @@ dev = [
 ]
 
 [tool.black]
-target-version = ['py38']
+target-version = ['py39']
 line-length = 120
 
 [tool.isort]

@@ -24,7 +24,7 @@
 <p align="center">
   <a href="https://github.com/orbbec/pyorbbecsdk/actions/workflows/build.yaml"><img src="https://img.shields.io/badge/build-GitHub%20Actions-blue?logo=github" alt="Build"></a>
   <a href="https://pypi.org/project/pyorbbecsdk2/"><img src="https://img.shields.io/pypi/v/pyorbbecsdk2" alt="PyPI"></a>
-  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.8%20%7C%203.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue" alt="Python"></a>
+  <a href="https://www.python.org/"><img src="https://img.shields.io/badge/python-3.9%20%7C%203.10%20%7C%203.11%20%7C%203.12%20%7C%203.13%20%7C%203.14-blue" alt="Python"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-green" alt="License"></a>
 </p>
 
@@ -111,7 +111,7 @@ pip install --upgrade pyorbbecsdk2
 > 🔧 **Building from Source?**
 > See the [Build with UV Guide](https://orbbec.github.io/pyorbbecsdk/source/4_Package/build_with_uv.html) for detailed instructions.
 
-> **Note for Linux users:** PyPI does not provide pre-built wheels for Python 3.8 on Linux (x64 and ARM64). If you need Python 3.8 on Linux, download the wheel from [GitHub Releases](https://github.com/orbbec/pyorbbecsdk/releases) or [build from source](https://orbbec.github.io/pyorbbecsdk/source/4_Package/build_with_uv.html).
+> **Note for CPython 3.14:** PyPI wheels for pyorbbecsdk2 2.1.2 stop at CPython 3.13. This branch builds 3.14 by moving the pybind11 pin to 3.1.0 (which requires Python 3.9+), PyAV to 17.0.0, and the window library to pygame-ce. Build with `scripts/build_whl/build-whl-uv.sh 3.14`.
 
 **2. Setup the environment** (one-time OS-level configuration for metadata and udev rules):
 
@@ -167,7 +167,7 @@ pyorbbecsdk supports the following operating systems and architectures:
 - **Linux ARM64**: tested on NVIDIA Jetson AGX Orin, NVIDIA Jetson Orin NX, NVIDIA Jetson Orin Nano, NVIDIA Jetson AGX Xavier, NVIDIA Jetson Xavier NX, NVIDIA Jetson Thor
 - **macOS**: tested on M2 chip, OS version 13.2
 
-**Supported Python versions: 3.8 to 3.13**
+**Supported Python versions: 3.9 to 3.14**
 
 ### Quick Camera Evaluation
 
